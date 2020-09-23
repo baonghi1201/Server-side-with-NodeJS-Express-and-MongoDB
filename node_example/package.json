@@ -1,5 +1,5 @@
 {
-  "name": "node-example",
+  "name": "node-examples",
   "version": "1.0.0",
   "description": "Simple Node Example ",
   "main": "index.js",
@@ -11,5 +11,14 @@
   "license": "ISC",
   "dependencies": {
     "prompt": "^1.0.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/baonghi1201/Server-side-with-NodeJS-Express-and-MongoDB.git"
+  },
+  "bugs": {
+    "url": "https://github.com/baonghi1201/Server-side-with-NodeJS-Express-and-MongoDB/issues"
+  },
+  "homepage": "https://github.com/baonghi1201/Server-side-with-NodeJS-Express-and-MongoDB#readme"
 }
