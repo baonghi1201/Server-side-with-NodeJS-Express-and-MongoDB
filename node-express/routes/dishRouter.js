@@ -25,4 +25,24 @@ dishRouter.route('/')
     res.end('Deleting all the dishes');
 });
 
+dishRouter.route('/:dishId')
+.get((req, res, next)=>{
+    res.end('Will send dishes detail: ' + req.params.dishId + ' to you');
+})
+
+// Because we are getting dish details, so there is no point in 'CREATING' anything
+.post((req,res,next)=>{
+    res.statusCode=403;
+    res.end('POST operation not supported on /dishes/' + req.params.dishId);    
+})
+
+.put((req,res,next)=>{
+  res.write('Updating the dish: ' + req.params.dishId+ '\n');
+  res.end('Will update the dish: ' + req.body.name + ' with details' + req.body.description);
+})
+
+.delete((req,res,next)=>{
+  res.end('Deleting dish: ' + req.params.dishId);
+});
+
 module.exports=dishRouter;
