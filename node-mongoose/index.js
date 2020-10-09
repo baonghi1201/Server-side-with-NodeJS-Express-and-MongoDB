@@ -15,10 +15,27 @@ connect.then((db)=>{
     .then((dish)=>{
         console.log(dish);
 
-        return Dishes.find({}).exec();
+        return Dishes.findByIdAndUpdate(dish._id, {
+            $set: {description:'Updated Test'}
+        },{ 
+            new: true
+        })
+        .exec();
     })
-    .then((dishes)=>{
-        console.log(dishes);
+    .then((dish)=>{
+        console.log(dish);
+        
+        dish.comments.push({
+            rating:5,
+            comment:'This pizza is so delicious',
+            author:'Nghi Nguyen'
+        });
+
+        return dish.save();
+    })
+    .then((dish)=>{
+        console.log(dish);
+        
         return Dishes.remove({});
     })
     .then(()=>{
