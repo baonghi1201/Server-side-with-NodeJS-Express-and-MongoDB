@@ -44,40 +44,58 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+
+
+// Cookies that help remember the authentication from the user, reduce the amount of time user have to re-input their username & password
+app.use(cookieParser('84769-48769-88860-38357'));
 
 function auth(req, res, next){
-  console.log(req.headers);
+  console.log(req.signedCookies);
 
-  var authHeader = req.headers.authorization;
-  
-  if (!authHeader){
-    var err = new Error('You are not authenticated');
+  if (!req.signedCookies.nghi){
+    var authHeader = req.headers.authorization;
+    
+    if (!authHeader){
+      var err = new Error('You are not authenticated');
 
-    res.setHeader('WWW-Authenticate', 'Basic');
-    err.status=401;
-    next(err);
-    return;
-  }
-  
-  var auth = new Buffer(authHeader.split(' ')[1], 'base64').toString().split(':');
-  
-  var username=auth[0];
-  var password=auth[1];
+      res.setHeader('WWW-Authenticate', 'Basic');
+      err.status=401;
+      next(err);
+      return;
+    }
+    
+    var auth = new Buffer(authHeader.split(' ')[1], 'base64').toString().split(':');
+    
+    var username=auth[0];
+    var password=auth[1];
 
-  if (username=='admin' && password =='admin'){
-    next();
+    if (username=='admin' && password =='pass'){
+      res.cookie('nghi', 'admin', {signed:true})
+      next();
+    }
+    else{
+      var err = new Error('You are not authenticated');
+      res.setHeader('WWW-Authenticate', 'Basic'); 
+      err.status=401;
+      next(err);
+    }
   }
   else{
-    var err = new Error('You are not authenticated');
+    if (req.signedCookies.nghi === 'admin'){
+      next();
 
-    res.setHeader('WWW-Authenticate', 'Basic');
-    err.status=401;
-    next(err);
+    }
+    else{
+      var err = new Error('You are not authenticated');
+      err.status=401;
+      next(err);
+    }
   }
 }
 
 app.use(auth);
+
+// Cookies that help remember the authentication from the user, reduce the amount of time user have to re-input their username & password
 
 app.use(express.static(path.join(__dirname, 'public')));
 
