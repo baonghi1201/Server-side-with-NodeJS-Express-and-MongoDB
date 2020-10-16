@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var session = require('express-session');
+var FileStore = require('session-file-store')(session);
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -47,12 +49,20 @@ app.use(express.urlencoded({ extended: false }));
 
 
 // Cookies that help remember the authentication from the user, reduce the amount of time user have to re-input their username & password
-app.use(cookieParser('84769-48769-88860-38357'));
+// app.use(cookieParser('84769-48769-88860-38357'));
+
+app.use(session({
+  name:'session-id',
+  secret:'84769-48769-88860-38357',
+  saveUninitialized:'false',
+  resave: false,
+  store: new FileStore()
+}))
 
 function auth(req, res, next){
-  console.log(req.signedCookies);
+  console.log(req.session);
 
-  if (!req.signedCookies.nghi){
+  if (!req.session.nghi){
     var authHeader = req.headers.authorization;
     
     if (!authHeader){
@@ -64,14 +74,14 @@ function auth(req, res, next){
       return;
     }
     
-    var auth = new Buffer(authHeader.split(' ')[1], 'base64').toString().split(':');
+    var auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
     
     var username=auth[0];
     var password=auth[1];
 
     if (username=='admin' && password =='pass'){
-      res.cookie('nghi', 'admin', {signed:true})
-      next();
+      req.session.nghi='admin';
+      next(); // authorized
     }
     else{
       var err = new Error('You are not authenticated');
@@ -81,7 +91,8 @@ function auth(req, res, next){
     }
   }
   else{
-    if (req.signedCookies.nghi === 'admin'){
+    if (req.session.nghi === 'admin'){
+      console.log('req.session: ', req.session);
       next();
 
     }
