@@ -7,6 +7,7 @@ var session = require('express-session');
 var FileStore = require('session-file-store')(session);
 var passport = require('passport');
 var authenticate = require('./authenticate');
+var config = require('./config');
 
 
 var indexRouter = require('./routes/index');
@@ -27,7 +28,7 @@ const Leaders= require('./models/leaders');
 
 const { Console } = require('console');
 
-const url = 'mongodb://localhost:27017/conFusion';
+const url = config.mongoUrl;
 
 const connect = mongoose.connect(url);
 
@@ -55,35 +56,30 @@ app.use(express.urlencoded({ extended: false }));
 // Cookies that help remember the authentication from the user, reduce the amount of time user have to re-input their username & password
 // app.use(cookieParser('84769-48769-88860-38357'));
 
-app.use(session({
-  name:'session-id',
-  secret:'84769-48769-88860-38357',
-  saveUninitialized:'false',
-  resave: false,
-  store: new FileStore()
-}))
-
 app.use(passport.initialize());
-app.use(passport.session());
+
 
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-function auth (req, res, next) {
-  console.log(req.user);
+// This 'auth' is used to authenticate the user for EVERY 'routes' after successfully logged in'
+// function auth (req, res, next) {
+//   console.log(req.user);
 
-  if (!req.user) {
-    var err = new Error('You are not authenticated!');
-    err.status = 403;
-    next(err);
-  }
-  else {
-        next();
-  }
-}
+//   if (!req.user) {
+//     var err = new Error('You are not authenticated!');
+//     err.status = 403;
+//     next(err);
+//   }
+//   else {
+//         next();
+//   }
+// }
 
-app.use(auth);
+// app.use(auth);
+
+// This 'auth' is used to authenticate the user for EVERY 'routes' after successfully logged in'
 
 // Cookies that help remember the authentication from the user, reduce the amount of time user have to re-input their username & password
 
