@@ -4,6 +4,7 @@ var User = require('./models/user');
 var JwtStrategy= require('passport-jwt').Strategy;
 var ExtractJwt = require('passport-jwt').ExtractJwt;
 var jwt=require('jsonwebtoken');
+var ObjectID = require('mongodb').ObjectID
 
 
 var config= require('./config');
@@ -41,6 +42,11 @@ exports.jwtPassport = passport.use(new JwtStrategy(opts,
     }));
 
 exports.verifyUser = passport.authenticate('jwt',{session:false});
+
+
+exports.checkUserId = ((req ,res ,next)=>{
+    User.findOne({_id:req.user._id})
+})
 
 
 exports.verifyAdmin = ((req, res, next)=>{
