@@ -4,17 +4,17 @@ const { Router } = require('express');
 const promoRouter=express.Router();
 
 const mongoose= require('mongoose');
-
+const cors =require('./cors');
 const authenticate = require('../authenticate');
 
 const Promos = require('../models/promotions');
-
+const {corsWithOption} = require('./cors');
 
 
 promoRouter.use(bodyParser.json());
 
 promoRouter.route('/')
-
+.options(cors.corsWithOption, (req ,res)=>{res.sendStatus=200;})
 .get((req,res,next)=>{
     Promos.find({})
     .then(promo=>{
@@ -25,7 +25,7 @@ promoRouter.route('/')
     .catch(err=>next(err));
 })
 
-.post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next)=>{
+.post(cors.corsWithOption,authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next)=>{
     Promos.create(req.body)
     .then(promo=>{
         console.log('New promotion created', promo);
@@ -36,12 +36,12 @@ promoRouter.route('/')
     .catch(err=>next(err));
 })
 
-.put(authenticate.verifyUser, authenticate.verifyAdmin, (req,res, next)=>{
+.put(cors.corsWithOption,authenticate.verifyUser, authenticate.verifyAdmin, (req,res, next)=>{
     res.statusCode=403;
     res.end('PUT not supported in on /promos');
 })
 
-.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req,res,next)=>{
+.delete(cors.corsWithOption,authenticate.verifyUser, authenticate.verifyAdmin, (req,res,next)=>{
     Promos.remove()
     .then(resp=>{
         console.log('Promotion removed');
@@ -55,6 +55,7 @@ promoRouter.route('/')
 // Promo with ID
 
 promoRouter.route('/:promoId')
+.options(cors.corsWithOption, (req ,res)=>{res.sendStatus=200;})
 .get((req,res,next)=>{
     Promos.findById(req.params.promoId)
     .then(promo=>{
@@ -65,12 +66,12 @@ promoRouter.route('/:promoId')
     .catch(err=>next(err));
 })
 
-.post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next)=>{
+.post(cors.corsWithOption,authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next)=>{
     res.statusCode=403;
     res.end('POST not supported in /promo/ ' + req.params.promoId);
 })
 
-.put(authenticate.verifyUser, authenticate.verifyAdmin, (req,res, next)=>{
+.put(cors.corsWithOption,authenticate.verifyUser, authenticate.verifyAdmin, (req,res, next)=>{
     Promos.findByIdAndUpdate(req.params.promoId,{
         $set:req.body
     }, {new:true})
@@ -82,7 +83,7 @@ promoRouter.route('/:promoId')
     .catch(err=>next(err));
 })
 
-.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req,res,next)=>{
+.delete(cors.corsWithOption,authenticate.verifyUser, authenticate.verifyAdmin, (req,res,next)=>{
     Promos.findByIdAndRemove(req.params.promoId)
     .then(resp=>{
         console.log('Deleting promo details ' + req.params.promoId);
